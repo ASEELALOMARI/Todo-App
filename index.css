@@ -17,6 +17,7 @@ body {
   margin: 2em;
   background-color: #ffffff;
   border-radius: 10px;
+  box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.599);
 }
 
 .todo__title {
@@ -50,7 +51,7 @@ body {
 }
 
 .todo__textarea {
-  padding: 8px; 
+  padding: 8px;
   resize: none;
 }
 
@@ -83,13 +84,11 @@ body {
 }
 
 .counter__container {
-  margin-top: 2em;
-  margin-bottom: 1em;
   display: flex;
   flex-direction: row;
   text-align: center;
   justify-content: center;
-  gap: 2em;
+  gap: 0.6em;
 }
 
 .counter__task {
@@ -120,6 +119,19 @@ body {
 
 .task__item:hover {
   background-color: #ececec;
+}
+
+.task__item--completed {
+  background-color: #ececec;
+  margin-bottom: 1em;
+  border: 1px solid #ececec;
+  border-radius: 5px;
+  padding: 1em;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1em;
 }
 
 .task__checkbox-container {
@@ -197,28 +209,23 @@ body {
 
 .text__container {
   width: 100%;
-  display: flex;
-  flex-direction: row;
+  display: inline-flex;
   align-items: center;
-  padding-left: 2em;
-  justify-content: space-between;
+  gap: 0.5em;
+  text-decoration: line-through;
 }
 
 .task__title--completed {
   font-size: 1em;
-  text-align: left;
   font-weight: bold;
   color: #3b3b3b;
-  text-decoration: line-through;
+  margin: 0;
 }
 
 .task__description--completed {
-  font-size: 0.5;
-  text-align: left;
+  font-size: 0.9em;
   color: #707070;
-  text-decoration: line-through;
-  margin-right: 5em;
-  width: 50%;
+  margin: 0;
 }
 
 .task__checkbox-mark--completed {
@@ -254,6 +261,49 @@ body {
 .task__checkbox:focus + .task__checkbox-mark--completed {
   outline: 3px solid #4caf50;
   opacity: 100;
+}
+
+.todo__header {
+  margin-top: 1em;
+  margin-bottom: 1em;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.search__container {
+  display: flex;
+  align-items: center;
+}
+
+.search__container i {
+  cursor: pointer;
+  margin-right: 0.5em;
+  color: #707070;
+}
+
+.search__container i:hover {
+  color: #4caf50;
+}
+
+.search__container i:focus {
+  padding: 0.3em;
+  outline: 3px solid #4caf50;
+  border-radius: 5px;
+}
+
+.search__input {
+  padding: 0.5em;
+  font-size: 1em;
+  border: 2px solid #4caf50;
+  border-radius: 5px;
+  max-width: 200px;
+  font-family: "Roboto";
+}
+
+.search__input:focus {
+  outline: 3px solid #4caf50;
+  border-radius: 5px;
 }
 
 /* Large screens */

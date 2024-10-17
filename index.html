@@ -10,7 +10,7 @@
     <link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="index.css" />
-    <title>Document</title>
+    <title>To-do App</title>
 </head>
 
 <body>
@@ -25,6 +25,15 @@
                 <textarea class="todo__input todo__textarea" type="text" id="TaskDescription" name="Description"
                     placeholder="Add some description here" required></textarea>
                 <button class="todo__button" type="submit" id="AddTask">Add Todo</button>
+                <br>
+                <div id="taskHeader" class="todo__header">
+                    <span id="TaskCounter"></span>
+                    <div id="searchContainer" class="search__container">
+                        <i id="searchIcon" class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" id="searchInput" placeholder="Search tasks..." class="search__input"
+                            style="display: none;">
+                    </div>
+                </div>
                 <br>
                 <div id="taskContainer"></div>
 

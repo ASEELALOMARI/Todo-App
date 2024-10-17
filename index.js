@@ -1,5 +1,3 @@
-console.log("App is working");
-
 // Retrieve tasks and completed tasks from local storage
 let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
 let completedTasks = JSON.parse(localStorage.getItem("completedTasks")) || [];
@@ -7,7 +5,10 @@ let completedTasks = JSON.parse(localStorage.getItem("completedTasks")) || [];
 const TaskForm = document.getElementById("TaskForm");
 const TaskTitle = document.getElementById("TaskTitle");
 const TaskDescription = document.getElementById("TaskDescription");
-const Add_btn = document.getElementById("AddTask");
+const AddBtn = document.getElementById("AddTask");
+const TaskCounter = document.getElementById("TaskCounter");
+const searchIcon = document.getElementById("searchIcon");
+const searchInput = document.getElementById("searchInput");
 
 let editingIndex = null;
 
@@ -17,21 +18,21 @@ function handleTaskFormSubmission(title, description) {
     // Update existing task
     tasks[editingIndex] = { title, description };
     editingIndex = null;
-    Add_btn.textContent = "Add Task";
+    AddBtn.textContent = "Add Task";
   } else {
     // Add a new task
     tasks.push({ title, description });
   }
 
   localStorage.setItem("tasks", JSON.stringify(tasks));
-  listTasks();
+  listTasks(tasks, completedTasks);
 }
 
 // Function to remove a task from the list
 function removeTask(index) {
   tasks.splice(index, 1);
   localStorage.setItem("tasks", JSON.stringify(tasks));
-  listTasks();
+  listTasks(tasks, completedTasks);
 }
 
 // Function to populate the form for updating a task
@@ -39,7 +40,7 @@ function populateFormForUpdate(index) {
   const task = tasks[index];
   TaskTitle.value = task.title;
   TaskDescription.value = task.description;
-  Add_btn.textContent = "Update Task";
+  AddBtn.textContent = "Update Task";
   editingIndex = index;
 }
 
@@ -50,26 +51,26 @@ function completeTask(index) {
 
   localStorage.setItem("tasks", JSON.stringify(tasks));
   localStorage.setItem("completedTasks", JSON.stringify(completedTasks));
-  listTasks();
+  listTasks(tasks, completedTasks);
 }
 
 // Function to mark a task as UnCompleted
-function UnCompleteTask(index) {
+function unCompleteTask(index) {
   const [uncompletedTask] = completedTasks.splice(index, 1);
   tasks.push(uncompletedTask);
 
   localStorage.setItem("tasks", JSON.stringify(tasks));
   localStorage.setItem("completedTasks", JSON.stringify(completedTasks));
 
-  listTasks();
+  listTasks(tasks, completedTasks);
 }
 
 // Function to list all tasks
-function listTasks() {
+function listTasks(todoTasks, todoCompletedTasks) {
   const taskContainer = document.getElementById("taskContainer");
   taskContainer.innerHTML = "";
 
-  if (tasks.length === 0 && completedTasks.length === 0) {
+  if (todoTasks.length === 0 && todoCompletedTasks.length === 0) {
     const noTaskDiv = document.createElement("div");
     noTaskDiv.textContent = "No tasks found.";
     noTaskDiv.className = "todo__text";
@@ -77,16 +78,12 @@ function listTasks() {
     return;
   }
 
-  // Task counter
-  const counterDiv = createTaskCounter();
-  taskContainer.appendChild(counterDiv);
-
   // Display active tasks
-  const taskElements = displayTasks(tasks);
+  const taskElements = displayTasks(todoTasks);
   taskElements.forEach((taskDiv) => taskContainer.appendChild(taskDiv));
 
   // Display completed tasks
-  const completedTaskElements = displayCompletedTasks(completedTasks);
+  const completedTaskElements = displayCompletedTasks(todoCompletedTasks);
   completedTaskElements.forEach((completedDiv) =>
     taskContainer.appendChild(completedDiv)
   );
@@ -187,13 +184,13 @@ function displayTasks(tasksList) {
 function displayCompletedTasks(completedList) {
   return completedList.map((completeTask, i) => {
     const completedTaskDiv = document.createElement("div");
-    completedTaskDiv.className = "task__item";
+    completedTaskDiv.className = "task__item--completed";
 
     // Checkbox for un-completing task
     const completedTasksCheckMark = document.createElement("div");
     completedTasksCheckMark.className = "task__checkbox-container";
-    completedTasksCheckMark.onclick = () => UnCompleteTask(i);
-    completedTasksCheckMark.onkeypress = () => UnCompleteTask(i);
+    completedTasksCheckMark.onclick = () => unCompleteTask(i);
+    completedTasksCheckMark.onkeypress = () => unCompleteTask(i);
 
     const completeCheckbox = document.createElement("input");
     completeCheckbox.type = "checkbox";
@@ -212,7 +209,7 @@ function displayCompletedTasks(completedList) {
     const completedTasksTextContainer = document.createElement("div");
     completedTasksTextContainer.className = "text__container";
     completedTasksTextContainer.innerHTML = `
-      <label for="${completeCheckbox.id}"class="task__title--completed">${completeTask.title}</label>
+      <label for="${completeCheckbox.id}" class="task__title--completed">${completeTask.title}</label>
       <p class="task__description--completed">${completeTask.description}</p>
     `;
 
@@ -220,6 +217,61 @@ function displayCompletedTasks(completedList) {
 
     return completedTaskDiv;
   });
+}
+
+// Toggle visibility of search input on icon click
+searchIcon.addEventListener("click", () => {
+  if (searchInput.style.display === "none") {
+    searchInput.style.display = "inline";
+    searchInput.focus();
+  } else {
+    searchInput.style.display = "none";
+    searchInput.value = "";
+    listTasks(tasks, completedTasks);
+  }
+});
+
+// Toggle visibility with Enter or Space key
+searchIcon.tabIndex = 0;
+searchIcon.addEventListener("keypress", (event) => {
+  if (event.key === "Enter" || event.key === " ") {
+    if (searchInput.style.display === "none") {
+      searchInput.style.display = "inline";
+      searchInput.focus();
+    } else {
+      searchInput.style.display = "none";
+      searchInput.value = "";
+      listTasks(tasks, completedTasks);
+    }
+  }
+});
+
+// Add keypress event to search input
+searchInput.addEventListener("input", () => {
+  const query = searchInput.value.trim().toLowerCase();
+  searchTasks(query);
+});
+
+// Function to filter and display tasks based on search query
+function searchTasks(query) {
+  if (query === "") {
+    listTasks(tasks, completedTasks);
+    return;
+  }
+
+  const filteredTasks = tasks.filter(
+    (task) =>
+      task.title.toLowerCase().includes(query) ||
+      task.description.toLowerCase().includes(query)
+  );
+
+  const filteredCompletedTasks = completedTasks.filter(
+    (task) =>
+      task.title.toLowerCase().includes(query) ||
+      task.description.toLowerCase().includes(query)
+  );
+
+  listTasks(filteredTasks, filteredCompletedTasks);
 }
 
 // Function to handle form submission (add or update task)
@@ -232,9 +284,10 @@ function formSubmit(event) {
     handleTaskFormSubmission(title, description);
     TaskForm.reset();
   } else {
-    console.log("Please fill in both title and description.");
+    console.alert("Please fill in both title and description.");
   }
 }
 
-Add_btn.addEventListener("click", formSubmit, false);
-listTasks();
+AddBtn.addEventListener("click", formSubmit, false);
+listTasks(tasks, completedTasks);
+TaskCounter.append(createTaskCounter());
